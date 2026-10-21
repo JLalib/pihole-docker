@@ -1,0 +1,33 @@
+# Basado en el template oficial de Pi-hole v6
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:2026.10.0
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "80:80/tcp"
+      - "443:443/tcp"
+      # Descomenta si usas Pi-hole como servidor DHCP
+      # - "67:67/udp"
+      # Descomenta si usas Pi-hole como servidor NTP
+      # - "123:123/udp"
+    environment:
+      TZ: 'Europe/Madrid'
+      # Cambia esta contraseña por una propia y segura
+      FTLCONF_webserver_api_password: 'cambia-esta-contrasena'
+      # Con la red bridge por defecto, el DNS debe escuchar en ALL
+      FTLCONF_dns_listeningMode: 'ALL'
+    volumes:
+      # Carpeta persistente con la configuración y las bases de datos
+      - './etc-pihole:/etc/pihole'
+      # Descomenta solo si tienes ficheros dnsmasq.d personalizados (ver nota)
+      # - './etc-dnsmasq.d:/etc/dnsmasq.d'
+    cap_add:
+      # Necesario solo para DHCP
+      - NET_ADMIN
+      # Necesario solo si Pi-hole sincroniza la hora del host como cliente NTP
+      - SYS_TIME
+      # Opcional: da algo más de tiempo de CPU a Pi-hole
+      - SYS_NICE
+    restart: unless-stopped
